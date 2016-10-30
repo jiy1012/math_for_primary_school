@@ -10,7 +10,7 @@ var qtype = "";
 var right = 0;
 var wrong = 0;
 
-//增加类型增加这里，然后div名字为key+"_div"，qtype为key+'_'+son:key 
+//增加类型增加这里，然后div名字为key+"_div"，qtype为key+'_'+son:key
 var div_array = {
   "addition_and_subtraction":{"1":"加减法(初级)",2:"加减法(高级)"},
   "compare":{1:"比大小(初级)",2:"比大小(高级)"},
@@ -48,7 +48,7 @@ function create_test(){
 		qtype = document.getElementById("create_qtype").value;
 		hidediv("create_div");
 		var div_name = qtype.substring(0,qtype.length-2)+"_div";
-    console.log("div_name:"+div_name);
+    // console.log("div_name:"+div_name);
 		showdiv(div_name);
 		showdiv("result_div");
 		fillQuestion();
@@ -109,7 +109,77 @@ function fillCompare(){
   	n1.innerText = num1_1+op1+num1_2;
   	n2.innerText = num2_1+op2+num2_2;
   }
+}
+function submitCompare(answer){
+	var all_number = wrong + right;
+	if(all_number >= qnumber){
+		alert("测试已经完成，请检查结果，要开始新测试刷新网页！");
+		return false;
+	}
+	var n1 = document.getElementById("compare_number_1").innerText;
+	var o = document.getElementById("compare_operator").innerText;
+	var n2 = document.getElementById("compare_number_2").innerText;
+	var answer_text = answer ? " √": " ×" ;
+	var str = n1+""+o+""+n2+""+answer_text+"\n";
+	var right_answer = eval(n1+o+n2);
+	var is_right = answer == right_answer;
+	if(is_right){
+		right++;
+	}else{
+		wrong++;
+	}
+	showResult();
+	addLog(str,is_right);
+	var all_number = wrong + right;
+	if(all_number < qnumber){
+		fillQuestion();
+	}
+}
+function fillAdditionAndSubtraction(){
+	var n1 = document.getElementById("test_number_1");
+	var o = document.getElementById("test_operator");
+	var n2 = document.getElementById("test_number_2");
+	var ans = document.getElementById("test_answer");
 
+	n1.readOnly = true;
+	o.readOnly = true;
+	n2.readOnly = true;
+	ans.readOnly = true;
+	var operator = randNumber(100)%2==0 ? "+" : "-";
+	var num1 = randNumber(qrange);
+	var num2 = randNumber(qrange);
+	var answer = eval(num1+operator+num2);
+
+	if(answer < 0){
+		var num = num1;
+		num1 = num2;
+		num2 = num;
+		answer = Math.abs(answer);
+	}
+	n1.value = num1;
+	n2.value = num2;
+	o.value = operator;
+	ans.value = answer;
+  if(qtype == 'addition_and_subtraction_1'){
+    ans.value = "";
+    ans.readOnly = false;
+  }else{
+    var type = randNumber(4);
+    if(type == 1){
+      n1.value = "";
+      n1.readOnly = false;
+    }else if(type == 2){
+      n2.value = "";
+      n2.readOnly = false;
+    }else if(type == 3){
+      o.value = "";
+      o.readOnly = false;
+    }else{
+      ans.value = "";
+      ans.readOnly = false;
+    }
+  }
+	document.onkeydown = bindEnter;
 }
 
 function fillAdditionAndSubtraction(){
@@ -159,9 +229,6 @@ function fillAdditionAndSubtraction(){
 	document.onkeydown = bindEnter;
 }
 
-
-
-
 function submitTest(){
 	var all_number = wrong + right;
 	if(all_number >= qnumber){
@@ -192,17 +259,72 @@ function submitTest(){
 	}
 }
 
-function submitCompare(answer){
+function fillMultiplicationAndDivision(){
+	var n1 = document.getElementById("method_number_1");
+	var o = document.getElementById("method_operator");
+	var n2 = document.getElementById("method_number_2");
+	var ans = document.getElementById("method_answer");
+
+	n1.readOnly = true;
+	o.disable = true;
+	n2.readOnly = true;
+	ans.readOnly = true;
+
+  is_division = randNumber(100)%2==0 ? false : true ;
+
+	var num1 = randNumber(qrange);
+	var num2 = randNumber(qrange);
+	var answer = eval(num1+'*'+num2);
+  var operator = !is_division ? "*" : "/";
+
+	if(is_division == true){
+		var num = num1;
+		num1 = answer;
+		num2 = num;
+		answer = num2;
+	}
+	n1.value = num1;
+	n2.value = num2;
+	o.value = operator;
+	ans.value = answer;
+  if(qtype == 'multiplication_and_division_1'){
+    ans.value = "";
+    ans.readOnly = false;
+  }else{
+    var type = randNumber(4);
+    if(type == 1){
+      n1.value = "";
+      n1.readOnly = false;
+    }else if(type == 2){
+      n2.value = "";
+      n2.readOnly = false;
+    }else if(type == 3){
+      o.value = "";
+      o.disable = false;
+    }else{
+      ans.value = "";
+      ans.readOnly = false;
+    }
+  }
+	document.onkeydown = bindEnter;
+}
+
+function submitMethod(){
 	var all_number = wrong + right;
 	if(all_number >= qnumber){
 		alert("测试已经完成，请检查结果，要开始新测试刷新网页！");
 		return false;
 	}
-	var n1 = document.getElementById("compare_number_1").innerText;
-	var o = document.getElementById("compare_operator").innerText;
-	var n2 = document.getElementById("compare_number_2").innerText;
-	var answer_text = answer ? " √": " ×" ;
-	var str = n1+""+o+""+n2+""+answer_text+"\n";
+	var n1 = document.getElementById("method_number_1").value;
+	var o = document.getElementById("method_operator").value;
+	var n2 = document.getElementById("method_number_2").value;
+	var answer = document.getElementById("method_answer").value;
+	if(answer == "" || n1 == "" || o == "" || n2 == ""){
+		alert("输入答案再提交！");
+		return false;
+	}
+  o_str = o =='*'?'×':'÷';
+	var str = n1+""+o_str+""+n2+""+"="+answer+"\n";
 	var right_answer = eval(n1+o+n2);
 	var is_right = answer == right_answer;
 	if(is_right){
@@ -304,12 +426,15 @@ function bindEnter(e) {
 	</div>
 
   <div id="multiplication_and_division_div" style="width:80%;height:50px;">
-    <input id="test_number_1" type="text"  style="font-size:30px;width:10%" maxlength="10" />
-    <input id="test_operator" type="text"  style="font-size:30px;width:10%" maxlength="10" />
-    <input id="test_number_2" type="text"  style="font-size:30px;width:10%" maxlength="10" />
+    <input id="method_number_1" type="text"  style="font-size:30px;width:10%" maxlength="10" />
+    <select id="method_operator" style="font-size:30px">
+        <option value="*">×</option>
+        <option value="/">÷</option>
+		</select>
+    <input id="method_number_2" type="text"  style="font-size:30px;width:10%" maxlength="10" />
     =
-    <input id="test_answer" type="text"  style="font-size:30px;width:10%" maxlength="10" />
-    <input id="test_submit_button_2"  style="font-size:30px" type="button" value="提交答案" onclick="submitTest2()" />
+    <input id="method_answer" type="text"  style="font-size:30px;width:10%" maxlength="10" />
+    <input id="method_submit_button"  style="font-size:30px" type="button" value="提交答案" onclick="submitMethod()" />
   </div>
 	<div id="result_div" style="width:80%;height:50px;">
 		<div style="font-size:30px">
