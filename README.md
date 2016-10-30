@@ -1,5 +1,7 @@
 # math_for_primary_school #
 math test for primary school
+## 在线访问 ##
+ 地址：[在线试用](https://cdn.rawgit.com/jiy1012/math_for_primary_school/master/math.html "math.html")
 # 小学加减乘除练习题 #
 ## 选择题目类型 ##
 ![](static/choose.png)
